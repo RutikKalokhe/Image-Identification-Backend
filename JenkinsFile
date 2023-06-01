@@ -1,0 +1,31 @@
+pipeline{
+     agent{
+     label 'imageidentificationback'
+     }
+     environment{     
+    DOCKERHUB_CREDENTIALS= credentials('dockerhub_id') 
+    REVISION = 1
+    
+} 
+     stages{
+         stage('Checkout') {
+          steps{ 
+          git branch: 'main', url: 'https://github.com/RutikKalokhe/Image-Identification-Backend.git'
+               }
+          }
+      
+          stage('Docker build'){
+          steps{
+               sh 'docker image build -t sumithpe/imagebackidentification:$REVISION .'
+               }  
+          }
+          
+          
+          stage('Docker push'){
+          steps{
+               sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                        sh 'docker image push sumithpe/imagebackidentification:$REVISION' 
+          }
+          }    
+     }
+}
