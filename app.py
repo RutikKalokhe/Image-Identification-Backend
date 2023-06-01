@@ -55,6 +55,13 @@ app.add_middleware(
 
 #     return response
 
+
+@app.get('/')
+async def home():
+    
+    return "Home Page"
+
+
 @app.post('/image')
 async def identify_single_image(image: bytes = File(...)):
 
