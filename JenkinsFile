@@ -1,31 +1,66 @@
 pipeline{
-     agent{
-     label 'imageidentificationback'
-     }
+     agent none
      environment{     
-    DOCKERHUB_CREDENTIALS= credentials('dockerhub_id') 
-    REVISION = 3
+    DOCKERHUB_CREDENTIALS= credentials('dockerhub_id')
+    GITHUB_CREDENTIALS= credentials('github_id')
+    REVISION = 2
     
 } 
      stages{
          stage('Checkout') {
+         agent{
+     label 'imageidentificationback'
+     }
           steps{ 
           git branch: 'main', url: 'https://github.com/RutikKalokhe/Image-Identification-Backend.git'
                }
           }
       
           stage('Docker build'){
+          agent{
+     label 'imageidentificationback'
+     }
           steps{
-               sh 'docker image build -t sumithpe/imagebackidentification:$REVISION .'
+               sh "docker image build -t sumithpe/imagebackidentification:$REVISION ."
                }  
           }
           
           
           stage('Docker push'){
+          agent{
+     label 'imageidentificationback'
+     }
           steps{
                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                        sh 'docker image push sumithpe/imagebackidentification:$REVISION' 
+                        sh "docker image push sumithpe/imagebackidentification:$REVISION"
+               
           }
-          }    
+          }   
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          stage('Git update'){
+          agent{
+     label 'argocd'
+     }
+          steps{
+          sh '''
+               cd /home/hpe/imageidentification/imageidentificationconfig
+                    git pull https://"$GITHUB_CREDENTIALS_USR":"$GITHUB_CREDENTIALS_PSW"@github.com/sumit871996/imageidentificationconfig.git
+                    sh backendscript.sh "$REVISION"
+                    git add .
+                    git commit -m "updated backend deployment file"
+                    git push https://"$GITHUB_CREDENTIALS_USR":"$GITHUB_CREDENTIALS_PSW"@github.com/sumit871996/imageidentificationconfig.git
+                    '''
+          }
+          } 
+          
+          
      }
 }
