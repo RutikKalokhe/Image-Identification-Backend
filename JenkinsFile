@@ -52,6 +52,8 @@ pipeline{
      label 'imageidentificationfront'
      }
           steps{
+          script {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
           sh '''
                cd /home/hpe/imageidentification/imageidentificationconfig
                     git pull https://"$GITHUB_CREDENTIALS_USR":"$GITHUB_CREDENTIALS_PSW"@github.com/sumit871996/imageidentificationconfig.git
@@ -61,7 +63,9 @@ pipeline{
                     git push https://"$GITHUB_CREDENTIALS_USR":"$GITHUB_CREDENTIALS_PSW"@github.com/sumit871996/imageidentificationconfig.git
                     '''
           }
+          }
           } 
+          }
 
           stage('Push to harbor'){
           agent{
