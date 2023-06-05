@@ -20,7 +20,7 @@ pipeline{
       
           stage('Docker build'){
           agent{
-     label 'imageidentificationback'
+     label 'imageidentificationfront'
      }
           steps{
                sh "docker image build -t sumithpe/imagebackidentification:$REVISION ."
@@ -30,7 +30,7 @@ pipeline{
           
           stage('Docker push'){
           agent{
-     label 'imageidentificationback'
+     label 'imageidentificationfront'
      }
           steps{
                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
@@ -49,7 +49,7 @@ pipeline{
           
           stage('Git update'){
           agent{
-     label 'argocd'
+     label 'imageidentificationfront'
      }
           steps{
           sh '''
