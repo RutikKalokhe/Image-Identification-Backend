@@ -11,7 +11,7 @@ pipeline{
      stages{
          stage('Checkout') {
          agent{
-     label 'imageidentificationback'
+     label 'imageidentificationfront'
      }
           steps{ 
           git branch: 'main', url: 'https://github.com/RutikKalokhe/Image-Identification-Backend.git'
