@@ -5,9 +5,9 @@ from pymongo import MongoClient
 
 
 # Connect to the MongoDB client on backend vm (sumit)
-client = MongoClient("mongodb:20.21.120.16:27017")
-db = client["imageidentification"]
-collection = db["test"]
+# client = MongoClient("mongodb:20.21.120.16:27017")
+# db = client["imageidentification"]
+# collection = db["test"]
 
 # Define the paths to cascade classifier XML files
 fullbody_cascade = cv2.CascadeClassifier('haarcascade_fullbody.xml')
@@ -16,20 +16,20 @@ upperbody_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
 
 def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
 
-    is_document_present = collection.find_one({"filename": filename})
+    # is_document_present = collection.find_one({"filename": filename})
 
-    print(is_document_present)
+    # print(is_document_present)
 
-    if(is_document_present):
-        identity = is_document_present['identity']
+    # if(is_document_present):
+    #     identity = is_document_present['identity']
 
-         # Prepare the response
-        response = {
-            'identity': identity
-        }
+    #      # Prepare the response
+    #     response = {
+    #         'identity': identity
+    #     }
 
-        return response
-    else:
+    #     return response
+    # else:
 
         # Convert the image bytes to a NumPy array
         nparr = np.frombuffer(image_bytes, np.uint8)
@@ -61,9 +61,9 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
             'identity': identity
         }
 
-        inserting_data = {"filename": filename, "identity": identity}
+      #  inserting_data = {"filename": filename, "identity": identity}
 
-        collection.insert_one(inserting_data)
+       # collection.insert_one(inserting_data)
 
         return response
 
