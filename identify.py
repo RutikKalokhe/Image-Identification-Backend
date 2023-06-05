@@ -5,8 +5,8 @@ from pymongo import MongoClient
 
 
 # Connect to the MongoDB client
-client = MongoClient("mongodb://localhost:27017")
-db = client["mydatabse"]
+client = MongoClient("mongodb:20.21.120.16:27017")
+db = client["imageidentification"]
 collection = db["test"]
 
 # Define the paths to cascade classifier XML files
