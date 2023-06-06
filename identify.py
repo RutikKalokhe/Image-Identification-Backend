@@ -4,10 +4,10 @@ from fastapi import File, UploadFile
 from pymongo import MongoClient
 
 
-#Connect to the MongoDB client on backend vm (sumit)
-client = MongoClient("mongodb://mongo:27017")
-db = client["imageidentification"]
-collection = db["test"]
+# #Connect to the MongoDB client on backend vm (sumit)
+# # client = MongoClient("mongodb://mongo:27017")
+# db = client["imageidentification"]
+# collection = db["test"]
 
 # Define the paths to cascade classifier XML files
 fullbody_cascade = cv2.CascadeClassifier('haarcascade_fullbody.xml')
@@ -23,20 +23,21 @@ smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 
 def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
 
-    is_document_present = collection.find_one({"filename": filename})
+    # is_document_present = collection.find_one({"filename": filename})
 
-    print(is_document_present)
+    # print(is_document_present)
 
-    if(is_document_present):
-        identity = is_document_present['identity']
+    # if(is_document_present):
+    #     identity = is_document_present['identity']
 
-         # Prepare the response
-        response = {
-            'identity': identity
-        }
+    #      # Prepare the response
+    #     response = {
+    #         'identity': identity,
+    #         'filename': filename
+    #     }
 
-        return response
-    else:
+    #     return response
+    # else:
 
         # Convert the image bytes to a NumPy array
         nparr = np.frombuffer(image_bytes, np.uint8)
@@ -81,12 +82,13 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
 
         # Prepare the response
         response = {
-            'identity': identity
+            'identity': identity,
+            'filename': filename
         }
 
-        inserting_data = {"filename": filename, "identity": identity}
+        # inserting_data = {"filename": filename, "identity": identity}
 
-        collection.insert_one(inserting_data)
+        # collection.insert_one(inserting_data)
 
         return response
 

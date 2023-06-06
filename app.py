@@ -3,6 +3,7 @@ import numpy as np
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from identify import identify_human_image, change_identity
+from typing import List
 
 # Create a FastAPI application
 app = FastAPI()
@@ -33,9 +34,9 @@ async def identify_single_image(image: UploadFile = File(...)):
 @app.post('/two_image')
 async def identify_two_images(image1: bytes = File(...), image2: bytes = File(...)):
 
-    resp1 = identify_human_image("aaaa", image1)
+    resp1 = identify_human_image(image1.filename, image1)
 
-    resp2 = identify_human_image( "aaaa", image2)
+    resp2 = identify_human_image(image2.filename, image2)
 
     response = {
         "image1" : resp1,
@@ -44,6 +45,17 @@ async def identify_two_images(image1: bytes = File(...), image2: bytes = File(..
 
     print(response)
     return response
+
+
+@app.post('/multiple_images')
+async def identify_multiple_images(images: List[UploadFile] = File(...)):
+    results = []
+    for image in images:
+        contents = await image.read()
+        resp = identify_human_image(image.filename, contents)
+        print(resp)
+        results.append(resp)
+    return results
 
 
 @app.post("/feedback")
