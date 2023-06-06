@@ -4,7 +4,7 @@ from fastapi import File, UploadFile
 from pymongo import MongoClient
 
 
-Connect to the MongoDB client on backend vm (sumit)
+#Connect to the MongoDB client on backend vm (sumit)
 client = MongoClient("mongodb:mongo:27017")
 db = client["imageidentification"]
 collection = db["test"]
