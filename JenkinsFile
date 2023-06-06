@@ -3,7 +3,7 @@ pipeline{
      environment{     
     DOCKERHUB_CREDENTIALS= credentials('dockerhub_id')
     GITHUB_CREDENTIALS= credentials('github_id')
-    REVISION = 9
+    REVISION = 10
     HARBOR_CREDENTIALS = credentials('harbor_id') 
 
     
