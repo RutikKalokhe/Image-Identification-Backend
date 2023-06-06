@@ -69,7 +69,7 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
         print("Profile Face Humans: ", len(profileface_humans))
         print("Smile Humans: ", len(smile_humans))
 
-
+        # identity=''
         # Check if humans are detected using each cascade classifier
         if ( len(fullbody_humans) > 0 and len(frontalface_humans) > 0 ) or (len(frontalface_humans) > 0 and len(upperbody_humans) > 0) or (len(upperbody_humans) > 0 and len(fullbody_humans) > 0):
             identity = 'Human'
@@ -84,11 +84,11 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
             'identity': identity
         }
 
-    inserting_data = {"filename": filename, "identity": identity}
+        inserting_data = {"filename": filename, "identity": identity}
 
-    collection.insert_one(inserting_data)
+        collection.insert_one(inserting_data)
 
-    return response
+        return response
 
 
 def change_identity(filename: str, new_identity: str):
