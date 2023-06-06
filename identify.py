@@ -84,11 +84,11 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
             'identity': identity
         }
 
-       inserting_data = {"filename": filename, "identity": identity}
+    inserting_data = {"filename": filename, "identity": identity}
 
-       collection.insert_one(inserting_data)
+    collection.insert_one(inserting_data)
 
-        return response
+    return response
 
 
 def change_identity(filename: str, new_identity: str):
