@@ -32,11 +32,15 @@ async def identify_single_image(image: UploadFile = File(...)):
 
 
 @app.post('/two_image')
-async def identify_two_images(image1: bytes = File(...), image2: bytes = File(...)):
+async def identify_two_images(image1: UploadFile = File(...), image2: UploadFile = File(...)):
 
-    resp1 = identify_human_image(image1.filename, image1)
+    image_bytes1 = await image1.read()
 
-    resp2 = identify_human_image(image2.filename, image2)
+    image_bytes2 = await image2.read()
+
+    resp1 = identify_human_image(image1.filename, image_bytes1)
+
+    resp2 = identify_human_image(image2.filename, image_bytes2)
 
     response = {
         "image1" : resp1,
