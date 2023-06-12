@@ -18,26 +18,26 @@ upperbody_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 eyeglass_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
 profileface_cascade = cv2.CascadeClassifier('haarcascade_profileface.xml')
-smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
+# smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 
 
 def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
 
-    is_document_present = collection.find_one({"filename": filename})
+    # is_document_present = collection.find_one({"filename": filename})
 
-    print(is_document_present)
+    # print(is_document_present)
 
-    if(is_document_present):
-        identity = is_document_present['identity']
+    # if(is_document_present):
+    #     identity = is_document_present['identity']
 
-         # Prepare the response
-        response = {
-            'identity': identity,
-            'filename': filename
-        }
+    #      # Prepare the response
+    #     response = {
+    #         'identity': identity,
+    #         'filename': filename
+    #     }
 
-        return response
-    else:
+    #     return response
+    # else:
 
         # Convert the image bytes to a NumPy array
         nparr = np.frombuffer(image_bytes, np.uint8)
@@ -57,7 +57,7 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
         eye_humans = eye_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
         eye_glass_humans = eyeglass_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
         profileface_humans = profileface_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-        smile_humans = smile_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        # smile_humans = smile_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
         # Print the number of humans detected by each classifier
         print("Full Body Humans: ", len(fullbody_humans))
@@ -68,7 +68,7 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
         print("Eye Humans: ", len(eye_humans))
         print("Eye Glass Humans: ", len(eye_glass_humans))
         print("Profile Face Humans: ", len(profileface_humans))
-        print("Smile Humans: ", len(smile_humans))
+        # print("Smile Humans: ", len(smile_humans))
 
         # identity=''
         # Check if humans are detected using each cascade classifier
@@ -86,18 +86,31 @@ def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
             'filename': filename
         }
 
-        inserting_data = {"filename": filename, "identity": identity}
+        # inserting_data = {"filename": filename, "identity": identity}
 
-        collection.insert_one(inserting_data)
+        # collection.insert_one(inserting_data)
 
         return response
 
 
-def change_identity(filename: str, new_identity: str):
-    filter_query = {"filename": filename}
+def change_identity(filename: str, identity: str):
 
-    query = {"$set": {"identity": new_identity}}
+    is_document_present = collection.find_one({"filename": filename})
 
-    collection.update_one(filter_query, query)
+    print(is_document_present)
 
-    return "changes updated"
+    if(is_document_present):
+        filter_query = {"filename": filename}
+
+        query = {"$set": {"identity": identity}}
+
+        collection.update_one(filter_query, query)
+
+        return "Changes Updated"
+    else:
+
+        inserting_data = {"filename": filename, "identity": identity}
+
+        collection.insert_one(inserting_data)
+
+        return "Data Inserted with user response"
