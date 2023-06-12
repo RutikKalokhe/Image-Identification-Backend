@@ -5,7 +5,7 @@ from pymongo import MongoClient
 
 
 # #Connect to the MongoDB client on backend vm (sumit)
-client = MongoClient("mongodb://mongo:27017")
+client = MongoClient("mongodb://localhost:27017")
 db = client["imageidentification"]
 collection = db["test"]
 
@@ -23,21 +23,21 @@ profileface_cascade = cv2.CascadeClassifier('haarcascade_profileface.xml')
 
 def identify_human_image( filename: str, image_bytes: bytes  = File(...)):
 
-    # is_document_present = collection.find_one({"filename": filename})
+    is_document_present = collection.find_one({"filename": filename})
 
-    # print(is_document_present)
+    print(is_document_present)
 
-    # if(is_document_present):
-    #     identity = is_document_present['identity']
+    if(is_document_present):
+        identity = is_document_present['identity']
 
-    #      # Prepare the response
-    #     response = {
-    #         'identity': identity,
-    #         'filename': filename
-    #     }
+         # Prepare the response
+        response = {
+            'identity': identity,
+            'filename': filename
+        }
 
-    #     return response
-    # else:
+        return response
+    else:
 
         # Convert the image bytes to a NumPy array
         nparr = np.frombuffer(image_bytes, np.uint8)
