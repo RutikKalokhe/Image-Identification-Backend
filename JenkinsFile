@@ -23,6 +23,7 @@ pipeline{
      label 'imageidentificationfront'
      }
           steps{
+               sh "docker image prune -af"
                sh "docker image build -t 20.21.104.152/imageidentification/imagebackidentification:$REVISION ."
                }  
           }
@@ -33,7 +34,6 @@ pipeline{
         label 'imageidentificationfront'
     }
             steps{
-                sh "docker image prune -af"
                 sh 'echo $HARBOR_CREDENTIALS_PSW | docker login 20.21.104.152 -u $HARBOR_CREDENTIALS_USR --password-stdin'  
                 sh "docker image push 20.21.104.152/imageidentification/imagebackidentification:$REVISION"
             }
