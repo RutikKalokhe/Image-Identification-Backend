@@ -25,17 +25,20 @@ pipeline{
           steps{
                sh "docker image prune -af"
                sh "docker image build -t 20.21.104.152/imageidentification/imagebackidentification:$REVISION ."
+               sh "docker image tag 20.21.104.152/imageidentification/imagebackidentification:$REVISION sumithpe/imagebackidentification:$REVISION"
                }  
           }
           
           
-          stage('Push to harbor'){
+          stage('Push to harbor & docker'){
           agent{
         label 'imageidentificationfront'
     }
             steps{
                 sh 'echo $HARBOR_CREDENTIALS_PSW | docker login 20.21.104.152 -u $HARBOR_CREDENTIALS_USR --password-stdin'  
                 sh "docker image push 20.21.104.152/imageidentification/imagebackidentification:$REVISION"
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' 
+                sh "docker image push sumithpe/imagebackidentification:$REVISION"
             }
         }
   
