@@ -3,7 +3,7 @@ pipeline{
      environment{     
     DOCKERHUB_CREDENTIALS= credentials('dockerhub_id')
     GITHUB_CREDENTIALS= credentials('github_id')
-    REVISION = 21
+    REVISION = 22
     HARBOR_CREDENTIALS = credentials('harbor_id') 
 
     
@@ -23,30 +23,22 @@ pipeline{
      label 'imageidentificationfront'
      }
           steps{
-               sh "docker image build -t sumithpe/imagebackidentification:$REVISION ."
+               sh "docker image build -t 20.21.104.152/imageidentification/imagebackidentification:$REVISION ."
                }  
           }
           
           
-          stage('Docker push'){
+          stage('Push to harbor'){
           agent{
-     label 'imageidentificationfront'
-     }
-          steps{
-               sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                        sh "docker image push sumithpe/imagebackidentification:$REVISION"
-               
-          }
-          }   
-          
-          
-          
-          
-          
-          
-          
-          
-          
+        label 'imageidentificationfront'
+    }
+            steps{
+                sh "docker image prune -af"
+                sh 'echo $HARBOR_CREDENTIALS_PSW | docker login 20.21.104.152 -u $HARBOR_CREDENTIALS_USR --password-stdin'  
+                sh "docker image push 20.21.104.152/imageidentification/imagebackidentification:$REVISION"
+            }
+        }
+  
           stage('Git update'){
           agent{
      label 'imageidentificationfront'
@@ -67,18 +59,7 @@ pipeline{
           } 
           }
 
-          stage('Push to harbor'){
-          agent{
-        label 'harbor_node'
-    }
-            steps{
-            sh "docker image prune -af"
-                sh "docker image pull sumithpe/imagebackidentification:$REVISION"
-                  sh "docker image tag sumithpe/imagebackidentification:$REVISION 20.21.104.152/imageidentification/imagebackidentification:$REVISION"
-                sh 'echo $HARBOR_CREDENTIALS_PSW | docker login 20.21.104.152 -u $HARBOR_CREDENTIALS_USR --password-stdin'  
-                sh "docker image push 20.21.104.152/imageidentification/imagebackidentification:$REVISION"
-            }
-        }
+          
           
           
      }
