@@ -5,7 +5,7 @@ from pymongo import MongoClient
 
 
 # #Connect to the MongoDB client on backend vm (sumit)
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient("mongodb://mongo:27017")
 db = client["imageidentification"]
 collection = db["test"]
 
@@ -114,3 +114,77 @@ def change_identity(filename: str, identity: str):
         collection.insert_one(inserting_data)
 
         return "Data Inserted with user response"
+
+
+
+
+def identify_aadhaar_photo( filename: str, image_bytes: bytes  = File(...)):
+
+    # is_document_present = collection.find_one({"filename": filename})
+
+    # print(is_document_present)
+
+    # if(is_document_present):
+    #     identity = is_document_present['identity']
+
+    #      # Prepare the response
+    #     response = {
+    #         'identity': identity,
+    #         'filename': filename
+    #     }
+
+    #     return response
+    # else:
+
+        # Convert the image bytes to a NumPy array
+        nparr = np.frombuffer(image_bytes, np.uint8)
+
+        # Read the image from the NumPy array
+        cv_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        # Convert the image to grayscale
+        gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+
+        # Detect humans using different cascade classifiers
+        # fullbody_humans = fullbody_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        frontalface_humans = frontalface_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        # upperbody_humans = upperbody_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+
+        eye_humans = eye_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        eye_glass_humans = eyeglass_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        profileface_humans = profileface_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        # smile_humans = smile_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+        # Print the number of humans detected by each classifier
+        # print("Full Body Humans: ", len(fullbody_humans))
+        print("Frontal Face Humans: ", len(frontalface_humans))
+        # print("Upper Body Humans: ", len(upperbody_humans))
+
+
+        print("Eye Humans: ", len(eye_humans))
+        print("Eye Glass Humans: ", len(eye_glass_humans))
+        print("Profile Face Humans: ", len(profileface_humans))
+        # print("Smile Humans: ", len(smile_humans))
+
+        # identity=''
+        # Check if humans are detected using each cascade classifier
+        if ( len(frontalface_humans) > 0 and len(eye_humans) > 0 ) or (len(frontalface_humans) > 0 and len(eye_glass_humans) > 0) or (len(frontalface_humans) > 0 and len(profileface_humans) > 0):
+            identity = 'Human'
+        else:
+            # if(len(frontalface_humans) > 0 and len(eye_humans) > 0 and len(eye_glass_humans) > 0 and len(profileface_humans) > 0):
+            #     identity = 'Human'
+            # else:
+            identity = 'Non-Human'
+
+        # Prepare the response
+        response = {
+            'identity': identity
+            # 'filename': filename
+        }
+
+        # inserting_data = {"filename": filename, "identity": identity}
+
+        # collection.insert_one(inserting_data)
+
+        return response

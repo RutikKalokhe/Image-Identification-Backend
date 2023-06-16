@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 from fastapi import FastAPI, File, Request, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from identify import identify_human_image, change_identity
+from identify import identify_human_image, change_identity, identify_aadhaar_photo
+from aadhaar_detect import is_aadhaar_card
 from typing import List
 
 # Create a FastAPI application
@@ -75,4 +76,30 @@ async def feedback(file: str, identity: str):
         return change_identity(file, identity) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+@app.post('/aadhaar')
+async def identify_aadhaarcard_image(image: UploadFile = File(...)):
+
+    try:
+        image_bytes = await image.read()
+        filename = image.filename
+
+        is_aadhaar = is_aadhaar_card(image_bytes)
+        is_aadhaarcard_photo = identify_aadhaar_photo(filename, image_bytes)
+        
+        print(is_aadhaarcard_photo['identity'])
+        print(is_aadhaar['message'])
+        
+        if is_aadhaarcard_photo['identity'] == 'Human' and is_aadhaar['message'] == "Original Aadhaar":
+            return {'message': "Original Aadhaar"}
+
+        else:
+            return {'message': "Duplicate Aadhaar/ Image is not clear"}
+    except Exception as e:
+        return {'message': "Duplicate Aadhaar/ Image is not clearrr"}
+        # return {'message': str(e)}
 
